@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<script src=
+"https://code.jquery.com/jquery-2.2.4.min.js">
+	</script>
+	<script src=
+"https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.5.2/dist/tf.min.js">
+	</script>
+
+	<link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+	<h1>Digit Recognition WebApp</h1>
+
+	<div id="paint">
+		<canvas id="myCanvas" width="200" height="200" style="border:1px solid #000000;">
+	</div>
+
+	<div id="predicted">
+		Recognized digit
+		<div id="number"></div>
+		<button id="pred" onclick="predict()"> Predict</button>
+		<button id="clear" onclick="cleancanvas()"> Clear</button>
+	</div>
+
+
+</body>
+	<script src="script.js"></script>
+</html>
