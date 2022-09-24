@@ -1,50 +1,62 @@
-# Importing Libraries
-from tensorflow.keras.datasets import mnist
+import tensorflow as tf
 import matplotlib.pyplot as plt
-from keras.utils import np_utils
-from keras import Sequential
-from keras.layers import Dense
-import tensorflowjs as tfjs
+from tensorflow.keras import datasets, layers, models, losses
+from tensorflow.keras.models import Sequential
+import cv2
+import numpy as np
+import matplotlib.pyplot as plt
 
-# Loading data
-(X_train, y_train), (X_test, y_test) = mnist.load_data()
-print ("X_train.shape: {}".format(X_train.shape))
-print ("y_train.shape: {}".format(y_train.shape))
-print ("X_test.shape: {}".format(X_test.shape))
-print ("y_test.shape: {}".format(y_test.shape))
+(x_train, y_train), (x_test, y_test)=tf.keras.datasets.mnist.load_data()
+X_train=[]
+X_test=[]
+for i,x in enumerate(x_train):
+	X_train+=[cv2.resize(x_train[i],(224,224),interpolation=cv2.INTER_AREA ) ]
+for i,x in enumerate(x_test):
+	X_test+=[cv2.resize(x_test[i],(224,224),interpolation=cv2.INTER_AREA )]
 
-# Visualizing Data
-plt.subplot(161)
-plt.imshow(X_train[3], cmap=plt.get_cmap('gray'))
-plt.subplot(162)
-plt.imshow(X_train[5], cmap=plt.get_cmap('gray'))
-plt.subplot(163)
-plt.imshow(X_train[7], cmap=plt.get_cmap('gray'))
-plt.subplot(164)
-plt.imshow(X_train[2], cmap=plt.get_cmap('gray'))
-plt.subplot(165)
-plt.imshow(X_train[0], cmap=plt.get_cmap('gray'))
-plt.subplot(166)
-plt.imshow(X_train[13], cmap=plt.get_cmap('gray'))
+X_train=np.array(X_train)/255
+X_train=X_train.reshape( (-1,224,224,1) )
+X_test=np.array(X_test)/255
+X_test=X_test.reshape( (-1,224,224,1) )
 
+X_val=X_test[:5000]
+y_val=y_test[:5000]
+print(X_train.shape)
+plt.imshow(X_train[0])
 plt.show()
+model = Sequential([
+  layers.Input( shape=(224, 224,1)),
+  layers.Conv2D(16, 3, padding='same', activation='relu'),
+  layers.MaxPooling2D(),
+  layers.Conv2D(32, 3, padding='same', activation='relu'),
+  layers.MaxPooling2D(),
+  layers.Conv2D(64, 3, padding='same', activation='relu'),
+  layers.MaxPooling2D(),
+  layers.Flatten(),
+  layers.Dense(128, activation='relu'),
+  layers.Dense(10,activation='softmax')
+])
 
-# Normalize Inputs from 0–255 to 0–1
-X_train = X_train / 255
-X_test = X_test / 255
-# One-Hot Encode outputs
-y_train = np_utils.to_categorical(y_train)
-y_test = np_utils.to_categorical(y_test)
-num_classes = 10
 
-# Training model
-x_train_simple = X_train.reshape(60000, 28 * 28).astype('float32')
-x_test_simple = X_test.reshape(10000, 28 * 28).astype('float32')
-model = Sequential()
-model.add(Dense(28 * 28, input_dim=28 * 28, activation='relu'))
-model.add(Dense(num_classes, activation='softmax'))
-model.compile(loss='categorical_crossentropy',
-		optimizer='adam', metrics=['accuracy'])
-model.fit(x_train_simple, y_train,
-		validation_data=(x_test_simple, y_test))
+model.compile(optimizer='adam', loss=losses.sparse_categorical_crossentropy, metrics=['accuracy'])
+model.summary()
+history = model.fit(X_train, y_train, batch_size=64, epochs=4, validation_data=(X_val, y_val))
+
+fig, axs = plt.subplots(2, 1, figsize=(15,15))
+
+axs[0].plot(history.history['loss'])
+axs[0].plot(history.history['val_loss'])
+axs[0].title.set_text('Training Loss vs Validation Loss')
+axs[0].set_xlabel('Epochs')
+axs[0].set_ylabel('Loss')
+axs[0].legend(['Train', 'Val'])
+
+axs[1].plot(history.history['accuracy'])
+axs[1].plot(history.history['val_accuracy'])
+axs[1].title.set_text('Training Accuracy vs Validation Accuracy')
+axs[1].set_xlabel('Epochs')
+axs[1].set_ylabel('Accuracy')
+axs[1].legend(['Train', 'Val'])
+
+model.evaluate(X_test, y_test)
 model.save('model.h5')

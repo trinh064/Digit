@@ -7,7 +7,15 @@ h1 {
 	font-size: 70px;
 	text-align: center;
 }
+#paint{
+margin: auto;
 
+}
+#myCanvas{
+	margin-left: auto;
+	margin-right: auto;
+	display: block;
+}
 #predicted {
 	font-size: 60px;
 	margin-top: 60px;
@@ -20,9 +28,9 @@ h1 {
 	text-align: center;
 	vertical-align: middle;
 }
-#clear {
+#clear #pred{
 	margin: auto;
-	margin-top: 70px;
-	padding: 30px;
+	margin-top: 60px;
+	padding: 60px;
 	text-align: center;
 }

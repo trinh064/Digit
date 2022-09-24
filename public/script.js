@@ -14,7 +14,7 @@ const canvas = document.querySelector('#myCanvas');
 
 // Context for the canvas for 2 dimensional operations
 const ctx = canvas.getContext('2d');
-ctx.scale(28/ 200, 28/200);
+//ctx.scale(28/ 200, 28/200);
 
 // Resizes the canvas to the available size of the window.
 
@@ -90,17 +90,18 @@ function predict () {
 	//var img = new Image();
   //ctx.drawImage(img,0,0,28,28);
 	console.log("predict");
-  data = ctx.getImageData(0,0,28,28).data;
+  data = ctx.getImageData(0,0,224,224).data;
 	var input = [];
         for (var i = 0; i < data.length; i += 4) {
-            input.push(data[i] / 255);
+            input.push(data[i]);
 					//	if(data[i] || data[i+1] || data[i+2] || data[i+3] ){console.log(i);}
         }
-
+  console.log(input);
 	if (window.model) {
 		window.model.predict([tf.tensor(input)
-			.reshape([1,28* 28])])
+			.reshape([1,224,224,1])])
 			.array().then(function (scores) {
+
 				scores = scores[0];
 				predicted = scores
 					.indexOf(Math.max(...scores));
