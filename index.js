@@ -20,5 +20,5 @@ app.get('/',(req,res)=>{
 
 // Server setup
 app.listen(8080, () => {
-console.log("The server started running on port 443")
+console.log("The server started running on port 8080")
 });
